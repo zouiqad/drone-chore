@@ -50,6 +50,8 @@ add_executable(${CURRENT_TARGET} source/main.cpp
         source/core/graphics/Scene.cpp
         source/core/graphics/Node.cpp
         source/core/graphics/Mesh.cpp
+        source/core/graphics/Model.cpp
+        source/patterns/events/KeyboardEvent.h
 )
 
 #==============================================================
@@ -67,8 +69,10 @@ find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(imgui REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(assimp REQUIRED)
 
-target_link_libraries(${CURRENT_TARGET} PRIVATE glad::glad glfw imgui::imgui OpenGL::GL glm::glm)
+
+target_link_libraries(${CURRENT_TARGET} PRIVATE glad::glad glfw imgui::imgui assimp::assimp OpenGL::GL glm::glm)
 
 # Copy the resources directory to the build directory
 add_custom_command(TARGET ${CURRENT_TARGET} POST_BUILD

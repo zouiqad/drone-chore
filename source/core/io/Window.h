@@ -2,14 +2,7 @@
 #define WINDOW_H
 
 #include <string>
-#include "patterns/events/LoadFileEvent.h"
-#include "patterns/events/MouseDragEvent.h"
-#include "patterns/events/MouseScrollEvent.h"
 #include "patterns/events/SceneStateEvent.h"
-#include "patterns/singleton/EventDispatcher.h"
-#include "patterns/events/ExportFileEvent.h"
-#include "patterns/events/RenderModeEvent.h"
-#include "patterns/events/TimerEndEvent.h"
 
 
 // Forward declaration to glfw
@@ -43,6 +36,10 @@ public:
     // Access to raw GLFWwindow pointer (if needed by Renderer, etc.)
     GLFWwindow *getNativeWindow() const { return window; }
 
+    void mouse_callback(GLFWwindow *window,
+                        double xpos,
+                        double ypos);
+
 private:
     GLFWwindow *window = nullptr;
     ImGuiIO *io = nullptr;
@@ -50,8 +47,13 @@ private:
     SceneStateEvent::SceneMetrics sceneMetrics;
     float executionTime;
 
+    bool firstMouse = true;
     double lastMouseX = 0.0;
     double lastMouseY = 0.0;
+
+    void processInput() const;
+
+    float getDeltaTime() const;
 
     // Callbacks
     static void mouse_button_callback(GLFWwindow *window,
@@ -59,9 +61,8 @@ private:
                                       int action,
                                       int mods);
 
-    static void cursorPositionCallback(GLFWwindow *window,
-                                       double xpos,
-                                       double ypos);
+
+    static void static_mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
     static void framebuffer_size_callback(GLFWwindow *window,
                                           int width,

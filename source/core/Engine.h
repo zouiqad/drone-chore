@@ -47,15 +47,13 @@ private:
     float rotationX = 0.0f; // Vertical rotation (pitch)
     float rotationY = 0.0f; // Horizontal rotation (yaw
 
-    void handleLoadFileEvent(const LoadFileEvent &e);
-
-    void handleExportFileEvent(const ExportFileEvent &e);
-
     void handleMouseDragEvent(const MouseDragEvent &e);
 
     void handleMouseScrollEvent(const MouseScrollEvent &e);
 
     void handleRenderModeEvent(const RenderModeEvent &e);
+
+    void handleKeyboardEvent(const KeyboardEvent &event);
 };
 }
 

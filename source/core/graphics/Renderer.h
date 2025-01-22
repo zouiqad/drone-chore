@@ -8,29 +8,28 @@
 namespace n2m::graphics {
 class Renderer {
 public:
-    Renderer ();
-    ~Renderer ();
+    Renderer();
 
-    bool init ();
+    ~Renderer();
+
+    bool init();
+
     // Loads shaders, initializes camera, maybe sets up default meshes
-    void drawFrame ();
+    void drawFrame();
+
     // Called every frame to render the scene
-    void cleanup (); // Frees GPU resources if needed
+    void cleanup(); // Frees GPU resources if needed
 
     // Getters & setters
-    void setScene (const Scene& scene) { this->scene = scene; }
-    Scene& getScene () { return scene; }
+    void setScene(const Scene &scene) { this->mScene = scene; }
+    Scene &getScene() { return mScene; }
 
-    void setShader (const Shader& shader) { this->shader = shader; }
-    Shader& getShader () { return shader; }
-
-    void setCamera (const Camera& camera) { this->camera = camera; }
-    Camera& getCamera () { return camera; }
+    void setShader(const Shader &shader) { this->mShader = shader; }
+    Shader &getShader() { return mShader; }
 
 private:
-    Shader shader;
-    Camera camera;
-    Scene scene;
+    Shader mShader;
+    Scene mScene;
 };
 }
 #endif // RENDERER_H

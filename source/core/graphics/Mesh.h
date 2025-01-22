@@ -2,20 +2,42 @@
 #define MESH_H
 
 #include "Geometry.h"
+#include "Shader.h"
+#include <string>
 
 namespace n2m::graphics {
-class Mesh : public Geometry {
+struct Vertex {
+    glm::vec3 Position;
+    glm::vec3 Normal;
+    glm::vec2 TexCoords;
+};
+
+struct Texture {
+    unsigned int id;
+    std::string type;
+    std::string path; // we store the path of the texture to compare with other textures
+};
+
+class Mesh {
 public:
-    Mesh () = default;
+    Mesh() = default;
 
-    virtual ~Mesh () = default;
+    virtual ~Mesh() = default;
 
+    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
-    void upload (const std::vector<GLfloat>& vertexData,
-        int componentsPerVertex,
-        const std::vector<unsigned int>& indices = {}) override;
+    void draw(Shader& shader) const;
 
-    void draw () const override;
+private:
+    GLuint VAO;
+    GLuint VBO;
+    GLuint EBO;
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    std::vector<Texture> textures;
+
+    void setup();
 };
 } // namespace n2m::graphics
 

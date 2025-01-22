@@ -1,37 +1,60 @@
 #ifndef CAMERA_H
 #define CAMERA_H
+#include <iostream>
+#include <ostream>
 #include <glm/glm.hpp>
+
 
 namespace n2m::graphics {
 class Camera {
 public:
-    Camera ();
-    ~Camera () = default;
+    Camera();
+
+    ~Camera() = default;
+
+    float yaw = -90.0f;
+    float pitch = 0.0f;
 
     // Set perspective parameters
-    void setPerspective (float fovDegrees,
-        float aspect,
-        float nearPlane,
-        float farPlane);
+    void setPerspective(float fovDegrees,
+                        float aspect,
+                        float nearPlane,
+                        float farPlane);
 
-    // Optionally set an orthographic projection
     // void setOrthographic(float left, float right, float bottom, float top, float nearPlane, float farPlane);
 
     // Basic camera transforms
-    void setPosition (const glm::vec3& pos);
-    void lookAt (const glm::vec3& target);
-    void setUp (const glm::vec3& upVec);
-    void zoom (const float& zoomFactor);
+    glm::vec3 getPosition() const { return position; }
 
-    glm::mat4 getViewMatrix () const;
-    glm::mat4 getProjectionMatrix () const;
+    void setPosition(const glm::vec3 &pos);
 
-    // You can add movement methods (moveForward, moveRight, pitch, yaw, etc.)
-    // For simplicity, let's keep it basic.
+    void lookAt(const glm::vec3 &target);
+
+    void setUp(const glm::vec3 &upVec);
+
+    void setDirection(const glm::vec3 &dir);
+
+    void zoom(const float &zoomFactor);
+
+    glm::mat4 getViewMatrix() const;
+
+    glm::mat4 getProjectionMatrix() const;
+
+
+    void move(const glm::vec3 &dir) { setPosition(getPosition() + dir); }
+
+    void moveForward(float distance);
+
+    void moveBackward(float distance);
+
+    void moveRight(float distance);
+
+    void moveLeft(float distance);
 
 private:
     glm::vec3 position;
-    glm::vec3 forward; // or direction
+    glm::vec3 forward;
+    glm::vec3 right;
     glm::vec3 up;
 
     // For perspective
@@ -43,8 +66,8 @@ private:
     // Zoom
     float baseFov;
     float zoomSensitivity = 1.0f;
-    float fovMin          = 30.0f;
-    float fovMax          = 90.0f;
+    float fovMin = 30.0f;
+    float fovMax = 90.0f;
 };
 } // namespace MyApp::Graphics
 

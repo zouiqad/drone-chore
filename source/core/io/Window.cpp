@@ -12,6 +12,16 @@
 #include <iostream>
 
 
+#include "patterns/singleton/EventDispatcher.h"
+#include "patterns/events/ExportFileEvent.h"
+#include "patterns/events/RenderModeEvent.h"
+#include "patterns/events/TimerEndEvent.h"
+#include "patterns/events/KeyboardEvent.h"
+#include "patterns/events/LoadFileEvent.h"
+#include "patterns/events/MouseDragEvent.h"
+#include "patterns/events/MouseScrollEvent.h"
+
+
 namespace n2m::io {
 Window::~Window () {
     shutdown ();
@@ -56,24 +66,27 @@ void Window::mouse_button_callback (GLFWwindow* window,
 }
 
 // Mouse movement callback
-void Window::cursorPositionCallback (GLFWwindow* window,
+void Window::mouse_callback (GLFWwindow* window,
     double xpos,
     double ypos) {
-    // Retrieve the Window object associated with this GLFWwindow
-    auto* win = static_cast<Window*> (glfwGetWindowUserPointer (window));
-    if (!win) return;
-
-    if (glfwGetMouseButton (window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        // Only drag when holding the left mouse button
-        double dx = xpos - win->lastMouseX;
-        double dy = ypos - win->lastMouseY;
-
-        MouseDragEvent mouse_drag_event (dx, dy);
-        EventDispatcher::Instance ().publish (mouse_drag_event);
-
-        win->lastMouseX = xpos;
-        win->lastMouseY = ypos;
+    if (firstMouse) {
+        lastMouseX = xpos;
+        lastMouseY = ypos;
+        firstMouse = false;
     }
+
+    float xoffset = xpos - lastMouseX;
+    float yoffset = lastMouseY - ypos;
+    lastMouseX    = xpos;
+    lastMouseY    = ypos;
+
+    float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+
+    MouseDragEvent mouse_drag_event (xoffset, yoffset);
+    EventDispatcher::Instance ().publish (mouse_drag_event);
 }
 
 bool Window::init_imgui () {
@@ -97,6 +110,14 @@ bool Window::init_imgui () {
     const char* glsl_version = "#version 150";
     ImGui_ImplOpenGL3_Init (glsl_version);
     return true;
+}
+
+void
+Window::static_mouse_callback (GLFWwindow* window, double xpos, double ypos) {
+    auto* win = static_cast<Window*> (glfwGetWindowUserPointer (window));
+    if (win) {
+        win->mouse_callback (window, xpos, ypos);
+    }
 }
 
 bool Window::init (int width, int height, const std::string& title) {
@@ -128,12 +149,14 @@ bool Window::init (int width, int height, const std::string& title) {
     // Callbacks
     glfwSetFramebufferSizeCallback (window, framebuffer_size_callback);
     glfwSetMouseButtonCallback (window, mouse_button_callback);
-    glfwSetCursorPosCallback (window, cursorPositionCallback);
+    glfwSetCursorPosCallback (window, &Window::static_mouse_callback);
     glfwSetScrollCallback (window, scroll_callback);
-
 
     // init imgui
     this->init_imgui ();
+
+    // Hide the cursor
+    glfwSetInputMode (window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Load OpenGL via glad
     if (!gladLoadGLLoader ((GLADloadproc)glfwGetProcAddress)) {
@@ -273,7 +296,35 @@ void Window::render () const {
     // glClear (GL_COLOR_BUFFER_BIT);
     ImGui_ImplOpenGL3_RenderDrawData (ImGui::GetDrawData ());
 
+    processInput ();
     glfwSwapBuffers (window);
+}
+
+void Window::processInput () const {
+    // Array of keys to monitor
+    const std::vector<int> keys = {GLFW_KEY_W, GLFW_KEY_A, GLFW_KEY_S,
+                                   GLFW_KEY_D};
+
+    float deltaTime = getDeltaTime ();
+
+    // Loop through keys and check their state
+    for (int key : keys) {
+        if (glfwGetKey (window, key) == GLFW_PRESS) {
+            EventDispatcher::Instance ().publish (
+                KeyboardEvent (key, KeyAction::PRESS, deltaTime));
+        } else if (glfwGetKey (window, key) == GLFW_RELEASE) {
+            // EventDispatcher::Instance ().publish (
+            //     KeyboardEvent (key, KeyAction::RELEASE, deltaTime));
+        }
+    }
+}
+
+float Window::getDeltaTime () const {
+    static float lastTime = 0.0f; // Keep track of the last frame time
+    float currentTime     = static_cast<float> (glfwGetTime ());
+    float deltaTime       = currentTime - lastTime;
+    lastTime              = currentTime;
+    return deltaTime;
 }
 
 bool Window::shouldClose () const {
