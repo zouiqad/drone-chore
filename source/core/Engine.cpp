@@ -4,9 +4,8 @@
 #include "patterns/singleton/EventDispatcher.h"
 #include "io/FileIO.h"
 #include "io/Window.h"
-
 #include <iostream>
-
+#include <GLFW/glfw3.h>
 
 namespace n2m {
 bool Engine::init () {
@@ -22,10 +21,6 @@ bool Engine::init () {
     }
 
     // Subscribe to events
-    EventDispatcher::Instance ().subscribe<LoadFileEvent> (
-        [this](const LoadFileEvent& e) {
-            handleLoadFileEvent (e);
-        });
 
     EventDispatcher::Instance ().subscribe<MouseDragEvent> (
         [this](const MouseDragEvent& e) {
@@ -42,9 +37,9 @@ bool Engine::init () {
             handleRenderModeEvent (e);
         });
 
-    EventDispatcher::Instance ().subscribe<ExportFileEvent> (
-        [this](const ExportFileEvent& e) {
-            handleExportFileEvent (e);
+    EventDispatcher::Instance ().subscribe<KeyboardEvent> (
+        [this](const KeyboardEvent& e) {
+            handleKeyboardEvent (e);
         });
 
     return true;
@@ -69,35 +64,35 @@ void Engine::shutdown () {
     m_renderer.cleanup ();
 }
 
-void Engine::handleLoadFileEvent (const LoadFileEvent& e) {
-    // @todo complete
-}
-
+//@todo fix
 void Engine::handleMouseDragEvent (const MouseDragEvent& e) {
-    // Sensitivity factor for rotation
-    const float sensitivity = 0.1f;
+    const float SENSITIVITY = 0.5f;
 
-    // Update rotation angles based on mouse movement
-    rotationY += static_cast<float> (e.x) * sensitivity; // Horizontal rotation
-    rotationX += static_cast<float> (e.y) * sensitivity; // Vertical rotation
+    m_renderer.getScene ().getCamera ().yaw += e.xoffset * SENSITIVITY;
+    m_renderer.getScene ().getCamera ().pitch += e.yoffset * SENSITIVITY;
 
+    if (m_renderer.getScene ().getCamera ().pitch > 89.0f)
+        m_renderer.
+            getScene ().getCamera ().pitch = 89.0f;
+    if (m_renderer.getScene ().getCamera ().pitch < -89.0f)
+        m_renderer.
+            getScene ().getCamera ().pitch = -89.0f;
 
-    // Clamp vertical rotation to avoid flipping
-    rotationX = glm::clamp (rotationX, -90.0f, 90.0f);
+    glm::vec3 direction;
+    direction.x = cos (glm::radians (m_renderer.getScene ().getCamera ().yaw)) *
+        cos (glm::radians (m_renderer.getScene ().getCamera ().pitch));
+    direction.y =
+        sin (glm::radians (m_renderer.getScene ().getCamera ().pitch));
+    direction.z = sin (glm::radians (m_renderer.getScene ().getCamera ().yaw)) *
+        cos (glm::radians (m_renderer.getScene ().getCamera ().pitch));
 
-    // Calculate camera position on a virtual arcball
-    m_renderer.getCamera ().setPosition (glm::vec3 (
-        sin (glm::radians (rotationY)) * cos (glm::radians (rotationX)) * 2.0f,
-        sin (glm::radians (rotationX)) * 2.0f,
-        cos (glm::radians (rotationY)) * cos (glm::radians (rotationX)) * 2.0f
-        ));
+    m_renderer.getScene ().getCamera ().setDirection (direction);
 }
 
+//@todo fix
 void Engine::handleMouseScrollEvent (const MouseScrollEvent& e) {
     zoomFactor -= static_cast<float> (e.yoffset) * 0.5f;
     zoomFactor = glm::clamp (zoomFactor, 1.0f, 20.0f);
-
-    m_renderer.getScene ().getAllNodes ()[0]->setScale (glm::vec3 (zoomFactor));
 }
 
 
@@ -113,30 +108,25 @@ void Engine::handleRenderModeEvent (const RenderModeEvent& e) {
     }
 }
 
-void Engine::handleExportFileEvent (const ExportFileEvent& e) {
-    bool success = false;
+void Engine::handleKeyboardEvent (const KeyboardEvent& e) {
+    float speed = 0.04f;
 
-    switch (e.format) {
-    case ExportFormat::OBJ: success = io::FileIO::exportOBJ (e.filePath,
-            m_renderer.getScene ().getFocusGeometry ()->getVertices (),
-            m_renderer.getScene ().getFocusGeometry ()->getIndices (),
-            m_renderer.getScene ().getFocusGeometry ()->getNormals ());
-        break;
-    case ExportFormat::STL: success = io::FileIO::exportSTL (e.filePath,
-            m_renderer.getScene ().getFocusGeometry ()->getVertices (),
-            m_renderer.getScene ().getFocusGeometry ()->getIndices (),
-            m_renderer.getScene ().getFocusGeometry ()->getNormals ());
-        break;
-    // Add cases for new formats here
-    default: std::cerr << "Unsupported export format." << std::endl;
-        return;
-    }
-
-    if (success) {
-        std::cout << "Successfully exported file to " << e.filePath <<
-            std::endl;
-    } else {
-        std::cerr << "Failed to export file to " << e.filePath << std::endl;
+    if (e.getAction () == KeyAction::PRESS) {
+        switch (e.getKeyCode ()) {
+        case GLFW_KEY_W: m_renderer.getScene ().getCamera ().moveForward (
+                speed);
+            break;
+        case GLFW_KEY_S: m_renderer.getScene ().getCamera ().moveBackward (
+                speed);
+            break;
+        case GLFW_KEY_A: m_renderer.getScene ().getCamera ().moveLeft (
+                speed);
+            break;
+        case GLFW_KEY_D: m_renderer.getScene ().getCamera ().moveRight (
+                speed);
+            break;
+        default: break;
+        }
     }
 }
 }

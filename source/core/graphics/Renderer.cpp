@@ -11,16 +11,20 @@ Renderer::~Renderer () {
 
 bool Renderer::init () {
     // Load a basic vertex/fragment shader program
-    if (!shader.loadShaders ("resources/shaders/simple.vert",
+    if (!mShader.loadShaders ("resources/shaders/simple.vert",
         "resources/shaders/simple.frag")) {
-        // Log error if needed
         return false;
     }
 
-    // Initialize camera
-    camera.setPerspective (45.0f, 16.0 / 9.0f, 0.1f, 100.0f);
-    camera.setPosition (glm::vec3 (0.0f, 0.0f, 2.0f));
-    camera.lookAt (glm::vec3 (0.0f, 0.0f, 0.0f));
+    mScene = Scene (mShader);
+
+    auto rootNode  = std::make_shared<Node> ();
+    auto model_ptr = std::make_shared<Model> (
+        "resources/models/backpack/backpack.obj");
+
+    rootNode->setModel (model_ptr);
+
+    mScene.addNode (rootNode);
 
     return true;
 }
@@ -29,31 +33,23 @@ void Renderer::drawFrame () {
     glClearColor (0.1f, 0.1f, 0.2f, 1.0f);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    shader.use ();
-
-    if (scene.getFocusGeometry () == nullptr) return;
+    mShader.use ();
 
     // Make the camera look at the origin
-    glm::mat4 model      = scene.getAllNodes ()[0]->getTransformationMatrix ();
-    glm::mat4 view       = camera.getViewMatrix ();
-    glm::mat4 projection = camera.getProjectionMatrix ();
+    glm::mat4 view       = mScene.getCamera ().getViewMatrix ();
+    glm::mat4 projection = mScene.getCamera ().getProjectionMatrix ();
 
     // Set uniform
-    shader.setUniform ("u_model", model);
-    shader.setUniform ("u_view", view);
-    shader.setUniform ("u_proj", projection);
+    mShader.setUniform ("u_view", view);
+    mShader.setUniform ("u_proj", projection);
 
+    mShader.setUniform ("uViewPos", mScene.getCamera ().getPosition ());
 
-    // if we want to control point size
-    glEnable (GL_PROGRAM_POINT_SIZE);
-
-    shader.setUniform ("u_pointSize", 1.0f);
-
-    // 5. Draw the mesh
-    scene.getFocusGeometry ()->draw ();
+    // Draw the scene
+    mScene.draw (mShader);
 }
 
 void Renderer::cleanup () {
-    scene.clear ();
+    mScene.clear ();
 }
 }

@@ -59,11 +59,8 @@ std::shared_ptr<graphics::Mesh> FileIO::loadOBJ (
         vertices.push_back (x); // X
         vertices.push_back (y); // Y
         vertices.push_back (z); // Z
-
-        mesh->setExtents (x, y, z); // Update extents
     }
 
-    mesh->upload (attrib.vertices, 3);
 
     return mesh;
 }

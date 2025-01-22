@@ -2,6 +2,8 @@
 #define RENDERMODEEVENT_H
 #include "Event.h"
 
+#include <unordered_map>
+
 namespace n2m {
 class RenderModeEvent : public Event {
 public:
@@ -12,17 +14,17 @@ public:
     };
 
 
-    static const std::unordered_map<renderMode, std::string>& renderModeToStringMap() {
+    static const std::unordered_map<renderMode, std::string> &renderModeToStringMap() {
         static const std::unordered_map<renderMode, std::string> map = {
-            { renderMode::Wireframe, "Wireframe" },
-            { renderMode::Solid, "Solid" }
+            {renderMode::Wireframe, "Wireframe"},
+            {renderMode::Solid, "Solid"}
         };
         return map;
     }
 
-    static renderMode fromString(const std::string& modeStr) {
-        const auto& map = renderModeToStringMap();
-        for (const auto& [key, value] : map) {
+    static renderMode fromString(const std::string &modeStr) {
+        const auto &map = renderModeToStringMap();
+        for (const auto &[key, value]: map) {
             if (value == modeStr) {
                 return key;
             }
@@ -32,8 +34,9 @@ public:
     RenderModeEvent(renderMode mode) : render_mode(mode) {
     }
 
-    RenderModeEvent(const std::string& mode)
-    : render_mode(fromString(mode)) {}
+    RenderModeEvent(const std::string &mode)
+        : render_mode(fromString(mode)) {
+    }
 
     renderMode render_mode = renderMode::Solid;
 };

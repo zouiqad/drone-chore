@@ -3,14 +3,19 @@
 
 #include <vector>
 #include <memory>
-#include "Geometry.h"
+#include "Shader.h"
 #include "Camera.h"
 #include "Node.h"
+#include "patterns/events/KeyboardEvent.h"
 
 namespace n2m::graphics {
 class Scene {
 public:
-    Scene();
+    Scene() = default;
+
+    Scene(Shader &shader);
+
+    void draw(Shader &shader) const;
 
     // clear the scene from all the nodes
     void clear();
@@ -20,28 +25,18 @@ public:
 
     void removeNode(const std::shared_ptr<Node> &node);
 
-    // Set a specific geometry to display at the center
-    std::shared_ptr<Geometry> getFocusGeometry() const {
-        return focusGeometry;
-    }
-
-    void setFocusGeometry(const std::shared_ptr<Geometry> &geometry);
-
-    std::shared_ptr<Geometry> getLoadedGeometry() const {
-        return loadedGeometry;
-    }
-
-    void setLoadedGeometry(const std::shared_ptr<Geometry> &geometry) {
-        loadedGeometry = geometry;
-    }
+    void setCamera(const Camera &camera) { this->mCamera = camera; }
+    Camera &getCamera() { return mCamera; }
 
     // Get all nodes in the scene
-    const std::vector<std::shared_ptr<Node> > &getAllNodes() const;
+    std::vector<std::shared_ptr<Node> > &getAllNodes() {
+        return nodes;
+    }
 
 private:
+    Camera mCamera;
+
     std::vector<std::shared_ptr<Node> > nodes;
-    std::shared_ptr<Geometry> focusGeometry;
-    std::shared_ptr<Geometry> loadedGeometry; // usefull so user can reset
 };
 } // namespace n2m::graphics
 
