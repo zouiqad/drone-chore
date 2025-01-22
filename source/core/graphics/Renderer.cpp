@@ -20,7 +20,7 @@ bool Renderer::init () {
 
     auto rootNode  = std::make_shared<Node> ();
     auto model_ptr = std::make_shared<Model> (
-        "resources/models/backpack/scene.gltf");
+        "resources/models/backpack/backpack.obj");
 
     rootNode->setModel (model_ptr);
 

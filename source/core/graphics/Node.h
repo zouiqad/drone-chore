@@ -11,7 +11,7 @@ public:
     struct Transform {
         Transform(const glm::vec3 &translation = glm::vec3(0.0f),
                   const glm::vec3 &rotation = glm::vec3(0.0f),
-                  const glm::vec3 &scale = glm::vec3(1.0f)) : translation(
+                  const glm::vec3 &scale = glm::vec3(3.0f)) : translation(
                                                                   translation),
                                                               rotation(rotation), scale(scale) {
         }
