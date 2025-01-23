@@ -5,6 +5,10 @@
 #include "Shader.h"
 #include "Scene.h"
 
+#include "../io/FileIO.h"
+
+#include <vector>
+
 namespace n2m::graphics {
 class Renderer {
 public:

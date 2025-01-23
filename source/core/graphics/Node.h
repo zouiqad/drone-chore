@@ -11,7 +11,7 @@ public:
     struct Transform {
         Transform(const glm::vec3 &translation = glm::vec3(0.0f),
                   const glm::vec3 &rotation = glm::vec3(0.0f),
-                  const glm::vec3 &scale = glm::vec3(3.0f)) : translation(
+                  const glm::vec3 &scale = glm::vec3(1.0f)) : translation(
                                                                   translation),
                                                               rotation(rotation), scale(scale) {
         }
@@ -59,6 +59,8 @@ public:
     void translate(const glm::vec3 &delta) { transform.translation += delta; }
     void rotate(const glm::vec3 &delta) { transform.rotation += delta; }
     void scale(const glm::vec3 &factor) { transform.scale *= factor; }
+
+    virtual std::string whoAmI(){return "Simple node";}
 
 private:
     std::shared_ptr<Model> m_model;

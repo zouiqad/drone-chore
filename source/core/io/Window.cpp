@@ -266,6 +266,8 @@ void Window::render_imgui () const {
         }
     }
 
+    ImGui::SeparatorText ("Animation frame");
+    ImGui::SliderInt("frame", &graphics::Scene::t, 0, 500);
 
     ImGui::SeparatorText ("Statistics");
     ImGui::Text ("Number of vertex %d", this->sceneMetrics.vertexCount);
@@ -303,7 +305,7 @@ void Window::render () const {
 void Window::processInput () const {
     // Array of keys to monitor
     const std::vector<int> keys = {GLFW_KEY_W, GLFW_KEY_A, GLFW_KEY_S,
-                                   GLFW_KEY_D};
+                                   GLFW_KEY_D, GLFW_KEY_SPACE, GLFW_KEY_BACKSPACE};
 
     float deltaTime = getDeltaTime ();
 

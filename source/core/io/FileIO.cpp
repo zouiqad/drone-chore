@@ -215,4 +215,57 @@ bool FileIO::exportSTL (const std::string& filepath,
     std::cout << "Successfully exported STL file: " << filepath << std::endl;
     return true;
 }
+
+std::vector<graphics::Drone> FileIO::readJson(std::string filename)
+{
+    FILE* fp = fopen(filename.c_str(), "rb"); 
+  
+    // Check if the file was opened successfully 
+    if (!fp) { 
+        std::cerr << "Error: unable to open file"
+                  << std::endl; 
+    } 
+  
+    // Read the file into a buffer 
+    char readBuffer[65536]; 
+    rapidjson::FileReadStream is(fp, readBuffer, 
+                                 sizeof(readBuffer)); 
+  
+    // Parse the JSON document 
+    rapidjson::Document doc; 
+    doc.ParseStream(is); 
+  
+    // Check if the document is valid 
+    if (doc.HasParseError()) { 
+        std::cerr << "Error: failed to parse JSON document"
+                  << std::endl; 
+        fclose(fp); 
+    } 
+  
+    // Close the file 
+    fclose(fp); 
+
+    std::vector<graphics::Drone> ret;
+
+    if (doc.HasMember("drones")) { 
+        const rapidjson::Value& drones = doc["drones"]; 
+        std::cout << "Drones size = " << drones.Size() << std::endl;
+        for (rapidjson::SizeType i = 0; i < drones.Size(); i++) { 
+            ret.push_back(graphics::Drone());
+            const rapidjson::Value& waypoints = drones[i]["waypoints"]; 
+            for (rapidjson::SizeType j = 0; j < waypoints.Size(); j++) { 
+                uint32_t frame = waypoints[j]["frame"].GetUint();
+                const rapidjson::Value& position = waypoints[j]["position"];
+                int x = position["lng_X"].GetInt();
+                int y = position["alt_Y"].GetInt();
+                int z = position["lat_Z"].GetInt();
+                ret[i].addWaypoint(x, y, z, frame);
+            }
+            ret[i].updatePosition(0);
+        } 
+    } 
+
+    return ret;
+}
+
 }

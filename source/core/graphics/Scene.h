@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Node.h"
+#include "Drone.h"
 #include "patterns/events/KeyboardEvent.h"
 
 namespace n2m::graphics {
@@ -32,6 +33,9 @@ public:
     std::vector<std::shared_ptr<Node> > &getAllNodes() {
         return nodes;
     }
+
+    static int t;
+    static bool pause;
 
 private:
     Camera mCamera;

@@ -46,7 +46,9 @@ bool Engine::init () {
 }
 
 void Engine::run () {
+    
     while (!m_window.shouldClose ()) {
+
         m_window.render ();
 
         if (!m_window.pollEvents ()) {
@@ -113,6 +115,10 @@ void Engine::handleKeyboardEvent (const KeyboardEvent& e) {
 
     if (e.getAction () == KeyAction::PRESS) {
         switch (e.getKeyCode ()) {
+        case GLFW_KEY_SPACE: graphics::Scene::pause = true;
+            break;
+        case GLFW_KEY_BACKSPACE: graphics::Scene::pause = false; graphics::Scene::t = 0; 
+            break;
         case GLFW_KEY_W: m_renderer.getScene ().getCamera ().moveForward (
                 speed);
             break;
@@ -125,6 +131,7 @@ void Engine::handleKeyboardEvent (const KeyboardEvent& e) {
         case GLFW_KEY_D: m_renderer.getScene ().getCamera ().moveRight (
                 speed);
             break;
+        
         default: break;
         }
     }

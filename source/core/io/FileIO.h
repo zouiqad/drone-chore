@@ -5,8 +5,13 @@
 
 #include <memory>
 #include <string>
+#include <cstdio>
+#include "core/graphics/Drone.h"
 #include "core/graphics/Geometry.h"
 #include "core/graphics/Mesh.h"
+#include "core/graphics/Scene.h"
+#include "rapidjson/document.h" 
+#include "rapidjson/filereadstream.h" 
 
 
 namespace n2m::io {
@@ -30,6 +35,9 @@ public:
                           const std::vector<glm::vec3> &vertices,
                           const std::vector<unsigned int> &indices,
                           const std::vector<glm::vec3> &normals = {});
+    static std::vector<graphics::Drone> readJson(std::string filename);
+
+
 };
 }
 

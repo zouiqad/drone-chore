@@ -1,4 +1,7 @@
 #include "Renderer.h"
+#include <ctime>
+#include <chrono>
+#include <thread>
 
 
 namespace n2m::graphics {
@@ -24,12 +27,27 @@ bool Renderer::init () {
 
     rootNode->setModel (model_ptr);
 
-    mScene.addNode (rootNode);
+    //mScene.addNode (rootNode);
+
+    std::vector<Drone> drones = io::FileIO::readJson("resources/waypoints.json");
+
+    std::cout << "x pos first drone = " << drones[0].getTranslation().x << std::endl;
+    std::cout << "y pos first drone = " << drones[0].getTranslation().y << std::endl;
+    std::cout << "z pos first drone = " << drones[0].getTranslation().z << std::endl;
+
+    for (size_t i = 0; i < drones.size(); i++)
+    {
+        drones[i].setModel(model_ptr);
+        mScene.addNode(std::make_shared<Drone>(drones[i]));
+    }
+    
 
     return true;
 }
 
 void Renderer::drawFrame () {
+    
+
     glClearColor (0.1f, 0.1f, 0.2f, 1.0f);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
