@@ -268,6 +268,8 @@ void Window::render_imgui () const {
 
     ImGui::SeparatorText ("Animation frame");
     ImGui::SliderInt("frame", &graphics::Scene::t, 0, 500);
+    ImGui::SeparatorText ("Sphère de collision");
+    ImGui::SliderInt("rayon", &graphics::Scene::collision_radius, 0, 500);
 
     ImGui::SeparatorText ("Statistics");
     ImGui::Text ("Number of vertex %d", this->sceneMetrics.vertexCount);

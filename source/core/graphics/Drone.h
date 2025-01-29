@@ -38,6 +38,11 @@ namespace n2m::graphics {
             this->waypoints.push_back({_x, _y, _z, _frame});
         }
 
+        static float distance(Drone d1, Drone d2)
+        {
+            return (d1.getTranslation() - d2.getTranslation()).length();
+        }
+
         virtual std::string whoAmI(){return "Drone";}
     };
 }

@@ -12,6 +12,7 @@
 
 namespace n2m::graphics {
     int Scene::t = 0;
+    int Scene::collision_radius = 50;
     bool Scene::pause = false;
 // ---------------- Scene Implementation -----------------
 Scene::Scene (Shader& shader) {
@@ -52,6 +53,27 @@ void Scene::draw (Shader& shader) const {
         }
         node->draw (shader);
     }
+
+    for (size_t i = 0; i < nodes.size() - 1; i++)
+    {
+        if(nodes[i]->whoAmI() != "Drone")
+        {
+            continue;
+        }
+        for (size_t j = i + 1; j < nodes.size(); j++)
+        {
+            if(nodes[j]->whoAmI() == "Drone")
+            {
+                if (Drone::distance(*((Drone*)nodes[j].get()), *((Drone*)nodes[i].get())) < collision_radius / 50.0f)
+                {
+                    std::cout << "Collision entre le drone " << i << " et le drone " << i << " à la frame " << t << std::endl;
+                }
+                
+            }
+        }
+        
+    }
+    
     
 }
 }
