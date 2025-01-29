@@ -315,8 +315,8 @@ void Window::processInput () const {
             EventDispatcher::Instance ().publish (
                 KeyboardEvent (key, KeyAction::PRESS, deltaTime));
         } else if (glfwGetKey (window, key) == GLFW_RELEASE) {
-            // EventDispatcher::Instance ().publish (
-            //     KeyboardEvent (key, KeyAction::RELEASE, deltaTime));
+            EventDispatcher::Instance ().publish (
+                KeyboardEvent (key, KeyAction::RELEASE, deltaTime));
         }
     }
 }

@@ -135,5 +135,13 @@ void Engine::handleKeyboardEvent (const KeyboardEvent& e) {
         default: break;
         }
     }
+    if(e.getAction () == KeyAction::RELEASE)
+    {
+        switch (e.getKeyCode ()) {
+        case GLFW_KEY_SPACE: graphics::Scene::pause = false;
+            break;
+        default: break;
+        }
+    }
 }
 }
