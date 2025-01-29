@@ -29,7 +29,7 @@ bool Renderer::init () {
 
     //mScene.addNode (rootNode);
 
-    std::vector<Drone> drones = io::FileIO::readJson("resources/waypoints.json");
+    std::vector<Drone> drones = io::FileIO::readJson("resources/waypoints2.json");
 
     std::cout << "x pos first drone = " << drones[0].getTranslation().x << std::endl;
     std::cout << "y pos first drone = " << drones[0].getTranslation().y << std::endl;

@@ -254,7 +254,9 @@ std::vector<graphics::Drone> FileIO::readJson(std::string filename)
             ret.push_back(graphics::Drone());
             const rapidjson::Value& waypoints = drones[i]["waypoints"]; 
             for (rapidjson::SizeType j = 0; j < waypoints.Size(); j++) { 
+                
                 uint32_t frame = waypoints[j]["frame"].GetUint();
+                
                 const rapidjson::Value& position = waypoints[j]["position"];
                 int x = position["lng_X"].GetInt();
                 int y = position["alt_Y"].GetInt();

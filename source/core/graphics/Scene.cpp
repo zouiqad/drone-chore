@@ -13,6 +13,7 @@
 namespace n2m::graphics {
     int Scene::t = 0;
     int Scene::collision_radius = 50;
+    int Scene::speed_limit = 50;
     bool Scene::pause = false;
 // ---------------- Scene Implementation -----------------
 Scene::Scene (Shader& shader) {
@@ -46,10 +47,16 @@ void Scene::draw (Shader& shader) const {
         temps = clock();
     }
     // Loop through nodes and render associated geometry
+    int cptDOG = 0;
     for (const auto& node : nodes) {
         if(node->whoAmI() == "Drone")
         {
+            auto oldPos = ((Drone*)node.get())->getTranslation();
             ((Drone*)node.get())->updatePosition(t);
+            auto newPos = ((Drone*)node.get())->getTranslation();
+            if((oldPos - newPos).length() > speed_limit / 10.0f)
+                std::cout << "A la frame " << t << ", le drone " << cptDOG << " va trop vite ! " << (oldPos - newPos).length() << std::endl; 
+            cptDOG++;
         }
         node->draw (shader);
     }
@@ -66,7 +73,7 @@ void Scene::draw (Shader& shader) const {
             {
                 if (Drone::distance(*((Drone*)nodes[j].get()), *((Drone*)nodes[i].get())) < collision_radius / 50.0f)
                 {
-                    std::cout << "Collision entre le drone " << i << " et le drone " << i << " à la frame " << t << std::endl;
+                    std::cout << "Collision entre le drone " << i << " et le drone " << j << " à la frame " << t << std::endl;
                 }
                 
             }

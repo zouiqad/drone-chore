@@ -270,6 +270,8 @@ void Window::render_imgui () const {
     ImGui::SliderInt("frame", &graphics::Scene::t, 0, 500);
     ImGui::SeparatorText ("Sphère de collision");
     ImGui::SliderInt("rayon", &graphics::Scene::collision_radius, 0, 500);
+    ImGui::SeparatorText ("Vitesse maximale autorisée pour les drones");
+    ImGui::SliderInt("vmax", &graphics::Scene::speed_limit, 0, 200);
 
     ImGui::SeparatorText ("Statistics");
     ImGui::Text ("Number of vertex %d", this->sceneMetrics.vertexCount);

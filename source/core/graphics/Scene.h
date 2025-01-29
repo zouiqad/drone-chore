@@ -34,7 +34,7 @@ public:
         return nodes;
     }
 
-    static int t, collision_radius;
+    static int t, collision_radius, speed_limit;
     static bool pause;
 
 private:
