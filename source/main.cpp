@@ -3,7 +3,7 @@
 
 
 int main () {
-    n2m::Engine* engine = new n2m::Engine ();
+    auto engine = std::make_shared<n2m::Engine> ();
 
     if (!engine->init ()) {
         std::cout << "Failed to initialize engine" << std::endl;
@@ -12,6 +12,5 @@ int main () {
 
     engine->run ();
 
-    delete engine;
     return 0;
 }

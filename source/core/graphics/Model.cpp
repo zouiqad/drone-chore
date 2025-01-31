@@ -109,7 +109,7 @@ std::vector<Texture> Model::loadMaterialTextures (aiMaterial* mat,
         if (!skip) {
             // if texture hasn't been loaded already, load it
             Texture texture;
-            texture.id   = TextureFromFile (str.C_Str (), directory);
+            texture.id   = loadTexture (str.C_Str (), directory);
             texture.type = typeName;
             texture.path = str.C_Str ();
             textures.push_back (texture);
@@ -119,7 +119,7 @@ std::vector<Texture> Model::loadMaterialTextures (aiMaterial* mat,
     return textures;
 }
 
-unsigned int TextureFromFile (const char* path,
+unsigned int loadTexture (const char* path,
     const std::string& directory,
     bool gamma) {
     std::string filename = std::string (path);

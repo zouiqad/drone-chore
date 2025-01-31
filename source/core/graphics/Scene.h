@@ -16,7 +16,7 @@ public:
 
     Scene(Shader &shader);
 
-    void draw(Shader &shader) const;
+    void draw(Shader &shader);
 
     // clear the scene from all the nodes
     void clear();
@@ -41,6 +41,8 @@ private:
     Camera mCamera;
 
     std::vector<std::shared_ptr<Node> > nodes;
+
+    float lastTime = 0.0f;
 };
 } // namespace n2m::graphics
 

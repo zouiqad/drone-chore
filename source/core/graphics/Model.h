@@ -8,9 +8,9 @@
 #include <assimp/postprocess.h>
 
 namespace n2m::graphics {
-unsigned int TextureFromFile(const char *path,
-                             const std::string &directory,
-                             bool gamma = false);
+unsigned int loadTexture(const char *path,
+                         const std::string &directory,
+                         bool gamma = false);
 
 class Model {
 public:
@@ -18,7 +18,7 @@ public:
         loadModel(path);
     }
 
-    void draw(Shader& shader);
+    virtual void draw(Shader &shader);
 
 private:
     // model data

@@ -80,7 +80,7 @@ void Mesh::draw (Shader& shader) const {
         GL_UNSIGNED_INT, 0);
     glBindVertexArray (0);
 
-    // always good practice to set everything back to defaults once configured.
+    //  set everything back to defaults once configured
     glActiveTexture (GL_TEXTURE0);
 }
 } // namespace n2m::graphics

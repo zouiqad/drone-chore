@@ -85,6 +85,8 @@ void Window::mouse_callback (GLFWwindow* window,
     yoffset *= sensitivity;
 
 
+    if (cursorEnabled) return;
+
     MouseDragEvent mouse_drag_event (xoffset, yoffset);
     EventDispatcher::Instance ().publish (mouse_drag_event);
 }
@@ -156,7 +158,7 @@ bool Window::init (int width, int height, const std::string& title) {
     this->init_imgui ();
 
     // Hide the cursor
-    glfwSetInputMode (window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    setCursorEnabled (cursorEnabled);
 
     // Load OpenGL via glad
     if (!gladLoadGLLoader ((GLADloadproc)glfwGetProcAddress)) {
@@ -210,6 +212,15 @@ bool Window::pollEvents () const {
     return true;
 }
 
+void Window::setCursorEnabled (bool enabled) {
+    cursorEnabled = enabled;
+    if (enabled) {
+        glfwSetInputMode (window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else {
+        glfwSetInputMode (window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+}
+
 void Window::render_imgui () const {
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame ();
@@ -222,30 +233,6 @@ void Window::render_imgui () const {
 
     // Create a window and append into it.
     ImGui::Begin ("Settings!");
-
-    if (ImGui::BeginMenu ("File")) {
-        if (ImGui::MenuItem ("Open..", "Ctrl+O")) {
-        }
-        if (ImGui::MenuItem ("Export as OBJ")) {
-            ExportFileEvent export_file_event (
-                "resources/models/exported_mesh.obj",
-                ExportFormat::OBJ);
-
-            EventDispatcher::Instance ().publish (export_file_event);
-        }
-
-        if (ImGui::MenuItem ("Export as STL")) {
-            ExportFileEvent export_file_event (
-                "resources/models/exported_mesh.stl",
-                ExportFormat::STL);
-
-            EventDispatcher::Instance ().publish (export_file_event);
-        }
-
-        if (ImGui::MenuItem ("Close", "Ctrl+W")) {
-        }
-        ImGui::EndMenu ();
-    }
 
     ImGui::Separator ();
 
@@ -267,11 +254,11 @@ void Window::render_imgui () const {
     }
 
     ImGui::SeparatorText ("Animation frame");
-    ImGui::SliderInt("frame", &graphics::Scene::t, 0, 500);
+    ImGui::SliderInt ("frame", &graphics::Scene::t, 0, 500);
     ImGui::SeparatorText ("Sphère de collision");
-    ImGui::SliderInt("rayon", &graphics::Scene::collision_radius, 0, 500);
+    ImGui::SliderInt ("rayon", &graphics::Scene::collision_radius, 0, 500);
     ImGui::SeparatorText ("Vitesse maximale autorisée pour les drones");
-    ImGui::SliderInt("vmax", &graphics::Scene::speed_limit, 0, 200);
+    ImGui::SliderInt ("vmax", &graphics::Scene::speed_limit, 0, 200);
 
     ImGui::SeparatorText ("Statistics");
     ImGui::Text ("Number of vertex %d", this->sceneMetrics.vertexCount);
@@ -297,9 +284,7 @@ void Window::render () const {
     int display_w, display_h;
     glfwGetFramebufferSize (window, &display_w, &display_h);
     glViewport (0, 0, display_w, display_h);
-    // glClearColor (clear_color.x * clear_color.w, clear_color.y * clear_color.w,
-    //     clear_color.z * clear_color.w, clear_color.w);
-    // glClear (GL_COLOR_BUFFER_BIT);
+
     ImGui_ImplOpenGL3_RenderDrawData (ImGui::GetDrawData ());
 
     processInput ();
@@ -308,13 +293,40 @@ void Window::render () const {
 
 void Window::processInput () const {
     // Array of keys to monitor
-    const std::vector<int> keys = {GLFW_KEY_W, GLFW_KEY_A, GLFW_KEY_S,
-                                   GLFW_KEY_D, GLFW_KEY_SPACE, GLFW_KEY_BACKSPACE};
+    const std::vector<int> camKeys = {GLFW_KEY_W, GLFW_KEY_A, GLFW_KEY_S,
+                                      GLFW_KEY_D};
+
+    const std::vector<int> uiKeys = {GLFW_KEY_BACKSPACE, GLFW_KEY_SPACE};
 
     float deltaTime = getDeltaTime ();
 
+
+    static bool fWasPressed = false;
+    if (glfwGetKey (window, GLFW_KEY_F) == GLFW_PRESS) {
+        if (!fWasPressed) {
+            // Toggle cursor/freecam mode
+            auto nonConstThis = const_cast<Window*> (this);
+            nonConstThis->setCursorEnabled (!cursorEnabled);
+            fWasPressed = true;
+        }
+    } else {
+        fWasPressed = false;
+    }
+
+    for (int key : uiKeys) {
+        if (glfwGetKey (window, key) == GLFW_PRESS) {
+            EventDispatcher::Instance ().publish (
+                KeyboardEvent (key, KeyAction::PRESS, deltaTime));
+        } else if (glfwGetKey (window, key) == GLFW_RELEASE) {
+            EventDispatcher::Instance ().publish (
+                KeyboardEvent (key, KeyAction::RELEASE, deltaTime));
+        }
+    }
+
+    if (cursorEnabled) return;
+
     // Loop through keys and check their state
-    for (int key : keys) {
+    for (int key : camKeys) {
         if (glfwGetKey (window, key) == GLFW_PRESS) {
             EventDispatcher::Instance ().publish (
                 KeyboardEvent (key, KeyAction::PRESS, deltaTime));
@@ -324,6 +336,7 @@ void Window::processInput () const {
         }
     }
 }
+
 
 float Window::getDeltaTime () const {
     static float lastTime = 0.0f; // Keep track of the last frame time

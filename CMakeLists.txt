@@ -52,6 +52,10 @@ add_executable(${CURRENT_TARGET} source/main.cpp
         source/core/graphics/Mesh.cpp
         source/core/graphics/Model.cpp
         source/patterns/events/KeyboardEvent.h
+        source/core/graphics/Gizmos.cpp
+        source/core/graphics/Gizmos.h
+        source/core/graphics/Skybox.cpp
+        source/core/graphics/Skybox.h
 )
 
 #==============================================================

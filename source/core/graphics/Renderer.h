@@ -2,12 +2,11 @@
 #define RENDERER_H
 
 #include "Camera.h"
+#include "Skybox.h"
 #include "Shader.h"
 #include "Scene.h"
+#include "Gizmos.h"
 
-#include "../io/FileIO.h"
-
-#include <vector>
 
 namespace n2m::graphics {
 class Renderer {
@@ -18,11 +17,13 @@ public:
 
     bool init();
 
-    // Loads shaders, initializes camera, maybe sets up default meshes
+    bool initSkybox();
+
+    bool initGizmos();
+
     void drawFrame();
 
-    // Called every frame to render the scene
-    void cleanup(); // Frees GPU resources if needed
+    void cleanup();
 
     // Getters & setters
     void setScene(const Scene &scene) { this->mScene = scene; }
@@ -32,8 +33,13 @@ public:
     Shader &getShader() { return mShader; }
 
 private:
-    Shader mShader;
     Scene mScene;
+
+    Shader mShader;
+    Shader mSkyboxShader;
+    Shader mGizmosShader;
+
+    std::unique_ptr<Skybox> mSkybox;
 };
 }
 #endif // RENDERER_H

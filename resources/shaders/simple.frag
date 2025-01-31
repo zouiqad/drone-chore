@@ -1,4 +1,3 @@
-// Fragment Shader
 #version 330 core
 
 in vec3 vFragPos;       // Fragment position in world space
@@ -28,7 +27,7 @@ void main()
     // Specular lighting
     vec3 viewDir = normalize(uViewPos - vFragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0); // Shininess factor of 32
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular = spec * uLightColor;
 
     // Combine lighting components

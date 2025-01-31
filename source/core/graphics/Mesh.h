@@ -15,7 +15,7 @@ struct Vertex {
 struct Texture {
     unsigned int id;
     std::string type;
-    std::string path; // we store the path of the texture to compare with other textures
+    std::string path;
 };
 
 class Mesh {
@@ -26,7 +26,7 @@ public:
 
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
-    void draw(Shader& shader) const;
+    void draw(Shader &shader) const;
 
 private:
     GLuint VAO;

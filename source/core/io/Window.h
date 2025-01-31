@@ -45,6 +45,7 @@ private:
     ImGuiIO *io = nullptr;
 
     SceneStateEvent::SceneMetrics sceneMetrics;
+    bool cursorEnabled = true;
     float executionTime;
 
     bool firstMouse = true;
@@ -71,6 +72,8 @@ private:
     static void scroll_callback(GLFWwindow *window,
                                 double xoffset,
                                 double yoffset);
+
+    void setCursorEnabled(bool enabled);
 };
 }
 
